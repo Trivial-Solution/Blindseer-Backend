@@ -24,6 +24,7 @@ class DockerService:
                 try:
                     container = existing_containers[0]
                     container.start()
+
                     # Install dependencies and check the result
                     result = container.exec_run("fuser -k 10000/tcp 40000/tcp")
                     if result.exit_code == 0:
@@ -39,8 +40,7 @@ class DockerService:
                         print(f"Dependency installation failed: {result.output}")
 
                     # Start the LLaVA API server with environment variable and check the result
-                    result = container.exec_run(
-                        "/bin/bash -c 'export HF_HOME=\"/workspace\" && python -m llava.serve.api -H 0.0.0.0 -p 5000'")
+                    result = container.exec_run("/bin/bash -c 'export HF_HOME=\"/workspace\" && python -m llava.serve.api -H 0.0.0.0 -p 5000'")
                     if result.exit_code == 0:
                         print("LLaVA API server started successfully.")
                     else:
@@ -53,7 +53,9 @@ class DockerService:
                 'detach': True,
                 'ports': {'3000': '3001', '8888': '8888', '5000': '5000'},
                 'environment': {'JUPYTER_PASSWORD': 'Jup1t3R!'},
-                'volumes': {'/workspace': {'bind': '/workspace', 'mode': 'rw'}},
+                'volumes': {'/workspace':
+                                {'bind': '/workspace', 'mode': 'rw'}
+                            },
                 'runtime': 'nvidia',  # This is equivalent to --gpus all in the command line
             }
 
