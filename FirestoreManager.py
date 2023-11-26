@@ -6,9 +6,9 @@ from firebase_admin import firestore
 import time
 
 
-class FirestoreManager():
-    def __init__(self):
-        self.cred = credentials.Certificate('keys/blindseer-cfefc-firebase-adminsdk-h2tky-ac28da08b2.json')
+class FirestoreManager:
+    def __init__(self, credentials_file):
+        self.cred = credentials.Certificate(credentials_file)
         firebase_admin.initialize_app(self.cred)
 
     def upload_text(self, text: str):

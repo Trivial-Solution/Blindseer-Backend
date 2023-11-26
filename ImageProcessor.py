@@ -3,6 +3,7 @@ import time
 import requests
 import base64
 
+
 class ImageProcessor:
     def __init__(self, base_uri):
         self.base_uri = base_uri
@@ -32,6 +33,7 @@ class ImageProcessor:
         )
 
         print(f'Status code: {r.status_code}')
+        response_text = ""
 
         if self.stream:
             if r.encoding is None:
@@ -39,21 +41,27 @@ class ImageProcessor:
 
             for line in r.iter_lines(decode_unicode=True):
                 if line:
-                    print(line, end='')
+                    try:
+                        line_json = json.loads(line)
+                        response_text += line_json.get('response', '') + "\n"
+                    except json.JSONDecodeError:
+                        pass  # Handle JSON decode error
 
             time_taken = timer.get_elapsed_time()
-            print('')
         else:
             time_taken = timer.get_elapsed_time()
             resp_json = r.json()
-            print(json.dumps(resp_json, indent=4, default=str))
+            response_text = resp_json.get('response', '')
 
         print(f'Total time taken for API call {time_taken} seconds')
+
+        return response_text
 
     @staticmethod
     def __encode_image_to_base64(image_path):
         with open(image_path, 'rb') as image_file:
             return str(base64.b64encode(image_file.read()).decode('utf-8'))
+
 
 class Timer:
     def __init__(self):
