@@ -35,7 +35,26 @@ else
     fi
 
     mkdir -p /workspace/logs
-    echo "Starting LLaVA"
+
+# Starting API service
+echo "Starting API service..."
+
+# Install dependencies
+source /workspace/venv/bin/activate
+pip3 install flask protobuf
+
+# Save current directory and change to /workspace/LLaVA
+original_dir=$(pwd)
+cd /workspace/LLaVA
+
+# Start the API
+export HF_HOME="/workspace"
+python -m llava.serve.api -H 0.0.0.0 -p 5000
+
+# Change back to the original directory
+cd $original_dir
+
+echo "Starting LLaVA"
     /start_controller.sh
     /start_model_worker.sh
     /start_webserver.sh
