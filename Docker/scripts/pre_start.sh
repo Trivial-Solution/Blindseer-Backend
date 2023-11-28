@@ -23,6 +23,8 @@ else
     export LLAVA_HOST="0.0.0.0"
     export LLAVA_CONTROLLER_PORT="10000"
     export LLAVA_MODEL_WORKER_PORT="40000"
+    export FLASK_HOST="0.0.0.0"
+    export FLASK_PORT="5000"
     export GRADIO_SERVER_NAME=${LLAVA_HOST}
     export GRADIO_SERVER_PORT="3001"
     export HF_HOME="/workspace"
@@ -35,31 +37,14 @@ else
     fi
 
     mkdir -p /workspace/logs
-
-# Starting API service
-echo "Starting API service..."
-
-# Install dependencies
-source /workspace/venv/bin/activate
-pip3 install flask protobuf
-
-# Save current directory and change to /workspace/LLaVA
-original_dir=$(pwd)
-cd /workspace/LLaVA
-
-# Start the API
-export HF_HOME="/workspace"
-python -m llava.serve.api -H 0.0.0.0 -p 5000
-
-# Change back to the original directory
-cd $original_dir
-
-echo "Starting LLaVA"
+    echo "Starting LLaVA"
+    /start_flask.sh
     /start_controller.sh
     /start_model_worker.sh
     /start_webserver.sh
     echo "LLaVA started"
     echo "Log files: "
+    echo "   - Flask:   /workspace/logs/api.log"
     echo "   - Controller:   /workspace/logs/controller.log"
     echo "   - Model Worker: /workspace/logs/model-worker.log"
     echo "   - Webserver:    /workspace/logs/webserver.log"

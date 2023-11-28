@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 source /workspace/venv/bin/activate
 cd /workspace/LLaVA
-nohup python3 -m llava.serve.controller \
+nohup python3 -m llava.serve.model_worker \
   --host ${LLAVA_HOST} \
-  --port ${LLAVA_CONTROLLER_PORT} > /workspace/logs/controller.log 2>&1 &
+  --controller http://localhost:${LLAVA_CONTROLLER_PORT} \
+  --port ${LLAVA_MODEL_WORKER_PORT} \
+  --worker http://localhost:${LLAVA_MODEL_WORKER_PORT} \
+  --model-path ${LLAVA_MODEL} > /workspace/logs/model-worker.log 2>&1 &
 deactivate

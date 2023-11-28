@@ -11,22 +11,6 @@ start_nginx() {
     service nginx start
 }
 
-# Start the LLaVA API
-#start_llava_api() {
-#    echo "Starting API service..."
-#    # Stop model worker and controller to free up VRAM
-#    fuser -k 10000/tcp 40000/tcp
-#
-#    # Install dependencies
-#    source /workspace/venv/bin/activate
-#    pip3 install flask protobuf
-#
-#    # Start the API
-#    cd /workspace/LLaVA
-#    export HF_HOME="/workspace"
-#    python -m llava.serve.api -H 0.0.0.0 -p 5000
-#}
-
 # Execute script if exists
 execute_script() {
     local script_path=$1
@@ -44,7 +28,27 @@ setup_ssh() {
         mkdir -p ~/.ssh
         echo -e "${PUBLIC_KEY}\n" >> ~/.ssh/authorized_keys
         chmod 700 -R ~/.ssh
+
+        if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then
+            ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -q -N ''
+        fi
+
+        if [ ! -f /etc/ssh/ssh_host_dsa_key ]; then
+            ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -q -N ''
+        fi
+
+        if [ ! -f /etc/ssh/ssh_host_ecdsa_key ]; then
+            ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -q -N ''
+        fi
+
+        if [ ! -f /etc/ssh/ssh_host_ed25519_key ]; then
+            ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -q -N ''
+        fi
+
         service ssh start
+
+        echo "SSH host keys:"
+        cat /etc/ssh/*.pub
     fi
 }
 
@@ -66,6 +70,7 @@ start_jupyter() {
           --port=8888 \
           --ip=* \
           --FileContentsManager.delete_to_trash=False \
+          --ContentsManager.allow_hidden=True \
           --ServerApp.terminado_settings='{"shell_command":["/bin/bash"]}' \
           --ServerApp.token=${JUPYTER_PASSWORD} \
           --ServerApp.allow_origin=* \
@@ -86,7 +91,6 @@ echo "Pod Started"
 
 setup_ssh
 start_jupyter
-#start_llava_api
 export_env_vars
 
 execute_script "/post_start.sh" "Running post-start script..."

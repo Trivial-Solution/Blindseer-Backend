@@ -1,4 +1,6 @@
 # Replace with your Google Cloud Storage bucket name
+import time
+
 from DockerService import DockerService
 from FirestoreManager import FirestoreManager
 from GoogleStorageManager import GoogleStorageManager
@@ -11,6 +13,7 @@ def main():
     image_processor = ImageProcessor('http://127.0.0.1:5000')
 
     DockerService.start_docker()
+    time.sleep(5)
 
     while True:
         most_recent_image_path = google_storage_manager.check_new_images()

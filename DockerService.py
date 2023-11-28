@@ -11,7 +11,7 @@ class DockerService:
         client = docker.from_env()
 
         # Check if the container already exists
-        existing_containers = client.containers.list(all=True, filters={'ancestor': 'llavaapi:latest'})
+        existing_containers = client.containers.list(all=True, filters={'ancestor': 'llavaapi:test'})
 
         if existing_containers:
             print("Docker container already exists")
