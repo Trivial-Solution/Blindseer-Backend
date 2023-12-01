@@ -2,23 +2,21 @@ import json
 import time
 import requests
 import base64
+import json
 
 
 class ImageProcessor:
     def __init__(self, base_uri):
         self.base_uri = base_uri
         self.stream = True
+        with open("prompts.json", 'r') as file:
+            self.prompts = json.load(file)
 
-    def process_image(self, image_name):
-
-        prompt = """
-        You are describing the scene to a blind person. You need to be concise and accurate.
-        """
-
+    def process_image(self, image_name, gesture):
         payload = {
             'model_path': 'liuhaotian/llava-v1.5-7b',
             'image_base64': ImageProcessor.__encode_image_to_base64(image_name),
-            'prompt': prompt,
+            'prompt': self.prompts[gesture],
             'temperature': 0.2,
             'max_new_tokens': 512,
             'stream': self.stream

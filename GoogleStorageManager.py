@@ -11,6 +11,7 @@ class GoogleStorageManager:
         self.bucket_name = bucket_name
         self.start_time = datetime.datetime.now()
         self.last_checked = set()
+        self.gesture = None
 
     def check_new_images(self, check_interval=1):
         """Check for new images in the bucket every `check_interval` seconds."""
@@ -36,7 +37,7 @@ class GoogleStorageManager:
             if most_recent_image:
                 print(f"Most recent image found: {most_recent_image}")
                 most_recent_image_path = f"images/{most_recent_image}"
-                self.__download_blob(most_recent_image, most_recent_image_path)
+                self.gesture = self.__download_blob(most_recent_image, most_recent_image_path)
 
             self.last_checked = current_blobs
 
@@ -56,9 +57,16 @@ class GoogleStorageManager:
         storage_client = storage.Client()
         bucket = storage_client.bucket(self.bucket_name)
         blob = bucket.blob(source_blob_name)
+        gesture = None
+        try:
+            gesture = blob.get_metadata()['gesture']
+        except KeyError:
+            pass
 
         print(f"Downloading {source_blob_name}")
 
         blob.download_to_filename(destination_file_name)
 
         print(f"Blob {source_blob_name} downloaded to {destination_file_name}.")
+
+        return gesture

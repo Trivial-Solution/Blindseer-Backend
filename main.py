@@ -20,7 +20,7 @@ def main():
 
         if most_recent_image_path:
             # Process the most recent image
-            processed_result = image_processor.process_image(most_recent_image_path)
+            processed_result = image_processor.process_image(most_recent_image_path, google_storage_manager.gesture)
             # Handle the processed image as needed
             print(f"Processed image with text: {processed_result}")
             firestore_manager.upload_text(processed_result)
