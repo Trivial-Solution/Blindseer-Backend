@@ -57,11 +57,12 @@ class GoogleStorageManager:
         storage_client = storage.Client()
         bucket = storage_client.bucket(self.bucket_name)
         blob = bucket.blob(source_blob_name)
+        blob.reload()
         gesture = None
-        try:
-            gesture = blob.get_metadata()['gesture']
-        except KeyError:
-            pass
+        if blob.metadata and 'gesture' in blob.metadata:
+            gesture = blob.metadata['gesture']
+        print(f"Gesture: {gesture}")
+
 
         print(f"Downloading {source_blob_name}")
 

@@ -13,6 +13,9 @@ class ImageProcessor:
             self.prompts = json.load(file)
 
     def process_image(self, image_name, gesture):
+        if gesture == None:
+            gesture = "None"
+
         payload = {
             'model_path': 'liuhaotian/llava-v1.5-7b',
             'image_base64': ImageProcessor.__encode_image_to_base64(image_name),
